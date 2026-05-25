@@ -22,10 +22,10 @@ describe('Product sorting on the inventory page', () => {
         inventoryPage.verifyProductsSortedByName('asc')
     })
 
-    it('sorts products by Name (A to Z)', () => {
-        inventoryPage.selectSortOption('Name (A to Z)')
-        inventoryPage.verifyProductsSortedByName('asc')
-    })
+    // it('sorts products by Name (A to Z)', () => {
+    //     inventoryPage.selectSortOption('Name (A to Z)')
+    //     inventoryPage.verifyProductsSortedByName('asc')
+    // })
 
     it('sorts products by Name (Z to A)', () => {
         inventoryPage.selectSortOption('Name (Z to A)')

@@ -1,4 +1,4 @@
-# GreenShield – QA Automation Engineer III Technical Assignment
+# GreenShield – QA Automation Engineer II Technical Assignment
 
 Cypress.io automation suite covering both test cases from the GreenShield take-home assignment. Tests run against the Sauce Labs demo application: [https://www.saucedemo.com](https://www.saucedemo.com).
 
@@ -31,7 +31,7 @@ Validates all four sort options plus the page's default state. Each `it` block i
 - Price (low to high) — numeric ascending
 - Price (high to low) — numeric descending
 
-A bonus login spec (`login.cy.js`) verifies the credentials fixture works and the landing page loads correctly. This runs first in the suite as a smoke test.
+A bonus login spec (`login.cy.js`) verifies the credentials fixture works and the landing page loads correctly. It also serves as a quick smoke test.
 
 ## Project Structure
 
@@ -94,13 +94,28 @@ Run a single spec headlessly:
 npx cypress run --spec "cypress/e2e/checkout.cy.js"
 ```
 
+Note: Cypress runs specs in alphabetical order (`checkout`, `login`, `product`), so the login smoke test is not the first to execute. It can be run on its own at any time with the single-spec command above.
+
 ### Page Object Model
 
-Each page of the application has its own class under `cypress/pages/`. Specs interact with the app exclusively through page object methods — they never call `cy.get()` directly. This keeps selectors in one place (so a UI change touches one file, not five) and keeps the specs themselves readable as a sequence of user actions.
+Each page of the application has its own class under `cypress/pages/`. The workflow specs interact with the app through page object methods rather than calling `cy.get()` inline. This keeps selectors in one place (so a UI change touches one file, not five) and keeps the specs themselves readable as a sequence of user actions.
+
+### Two Login Approaches: Page Object vs. Custom Command
+
+The suite demonstrates both common patterns for a shared action like login:
+
+- The **workflow specs** (`checkout.cy.js`, `product.cy.js`) log in through `LoginPage.login()` — the Page Object Model approach, which centralizes selectors and scales well as the suite grows.
+- The **login spec** (`login.cy.js`) logs in through `cy.login()`, a Cypress custom command registered globally in `cypress/support/commands.js`. Custom commands are available on every spec without an import, which makes them convenient for simple, frequently repeated actions.
+
+Both are valid; the choice depends on how much shared state and structure the suite needs. Showing both makes the trade-off explicit.
 
 ### `data-test` Selectors Preferred
 
-Where Sauce Labs exposes `data-test` attributes (most buttons, form inputs), those are used in preference to CSS classes or text content. They're stable: they won't break if the team renames a class or rewords a label. CSS classes are used only where no `data-test` attribute is available (e.g., `.title`, `.complete-header`, `.shopping_cart_badge`).
+Where Sauce Labs exposes `data-test` attributes (most buttons, form inputs), those are used in preference to CSS classes or text content. They're stable: they won't break if the team renames a class or rewords a label. CSS classes are used only where no `data-test` attribute is available (e.g., `.title`, `.complete-header`, `.shopping_cart_badge`, `.cart_item`).
+
+### Cart Assertions Check Rows, Not Just Text
+
+The cart verification methods assert on the number of `.cart_item` rows and the contents of the scoped `[data-test="inventory-item-name"]` elements, rather than matching text anywhere on the page. Counting rows catches a duplicate or a stray item that a page-wide text check would miss, and the expected counts reflect the specific scenario under test (three items added, one removed, two remaining).
 
 ### Fixtures for Credentials
 

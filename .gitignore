@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Cypress artifacts
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS / editor files
+.DS_Store
+.vscode/
